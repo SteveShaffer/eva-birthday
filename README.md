@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eva's 5th Birthday RSVP Site
 
-## Getting Started
+This is a Next.js web application for Eva's 5th Birthday party announcement and RSVP.
 
-First, run the development server:
+## Setup Instructions
+
+### Environment Variables
+
+Copy the `.env.local.example` to `.env.local` and fill in the required values.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.local.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Google Sheets Setup (Service Account)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project (e.g., "Eva Birthday RSVP").
+3. Enable the **Google Sheets API**.
+4. Go to **IAM & Admin > Service Accounts** and create a new Service Account.
+5. Create and download a JSON key for this Service Account.
+6. Open the downloaded JSON file. You will need the `client_email` and `private_key`.
+7. Extract the `private_key` (it should look like `-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n`).
+8. Create a new Google Sheet on your normal Google account.
+9. **IMPORTANT**: Click "Share" on the Google Sheet, and share it with the `client_email` from your Service Account as an **Editor**.
+10. Get the Google Sheet ID from the URL (the long string between `/d/` and `/edit`).
+11. Add these to your `.env.local` file:
+    ```
+    GOOGLE_CLIENT_EMAIL="your-service-account-email@project-id.iam.gserviceaccount.com"
+    GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----\n"
+    GOOGLE_SHEET_ID="your_sheet_id_here"
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. NextAuth (Google Login)
 
-## Learn More
+1. In the [Google Cloud Console](https://console.cloud.google.com/), go to **APIs & Services > Credentials**.
+2. Create an **OAuth client ID** (Application type: Web application).
+3. Set the Authorized redirect URIs. For local development: `http://localhost:3000/api/auth/callback/google`. For production, use your deployed URL (e.g., `https://your-domain.com/api/auth/callback/google`).
+4. Copy the Client ID and Client Secret and add them to `.env.local`:
+    ```
+    GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
+    GOOGLE_CLIENT_SECRET="your-client-secret"
+    ```
+5. Generate a random string for the `NEXTAUTH_SECRET` (you can use `openssl rand -base64 32` or just type a long random string).
+    ```
+    NEXTAUTH_SECRET="your_random_secret_string"
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Twilio SMS Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Create a Twilio account at [twilio.com](https://www.twilio.com/).
+2. Get a Twilio Phone Number.
+3. Find your **Account SID** and **Auth Token** on the Twilio Console dashboard.
+4. Add these to your `.env.local` file:
+    ```
+    TWILIO_ACCOUNT_SID="your_account_sid"
+    TWILIO_AUTH_TOKEN="your_auth_token"
+    TWILIO_PHONE_NUMBER="+1234567890"
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Running Locally
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Install dependencies: `npm install`
+2. Start the development server: `npm run dev`
+3. Open `http://localhost:3000` in your browser.
