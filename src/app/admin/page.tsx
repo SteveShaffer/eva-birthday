@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import { getRSVPs } from "@/lib/google-sheets";
+import { getRSVPs, RSVP } from "@/lib/google-sheets";
 import AdminDashboardClient from "./AdminDashboardClient";
 
 export default async function AdminPage() {
@@ -12,7 +12,7 @@ export default async function AdminPage() {
   }
 
   // Fetch RSVPs server-side
-  let rsvps = [];
+  let rsvps: RSVP[] = [];
   try {
     if (process.env.GOOGLE_SHEET_ID) {
       rsvps = await getRSVPs();
