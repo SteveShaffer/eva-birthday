@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
 import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, PawPrint, ChevronDown } from "lucide-react";
 
@@ -69,7 +70,7 @@ export default function Home() {
             <div className={styles.iconWrapper}><MapPin size={24} /></div>
             <div>
               <strong>Irvine Regional Park</strong>
-              <p>1 Irvine Park Road<br/>Orange, California 92869</p>
+              <p>1 Irvine Park Road<br />Orange, California 92869</p>
               <p className={styles.note}>$3 per car entry fee into the park. We will update on our location the morning of the event.</p>
             </div>
           </div>
@@ -139,8 +140,8 @@ export default function Home() {
 
         {rsvps.length > 0 && (
           <section className="mt-4 mb-4">
-            <h3 className="text-center mb-3" style={{color: 'var(--color-primary)'}}>
-              <MessageSquare size={24} style={{verticalAlign: 'middle', marginRight: '8px'}}/>
+            <h3 className="text-center mb-3" style={{ color: 'var(--color-primary)' }}>
+              <MessageSquare size={24} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
               Guest Book
             </h3>
             <div className={styles.commentGrid}>
@@ -154,6 +155,16 @@ export default function Home() {
           </section>
         )}
       </div>
+
+      <footer style={{ textAlign: 'center', marginTop: '40px', position: 'relative', zIndex: 3, display: 'flex', gap: '16px', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.8)', padding: '4px 12px' }}>
+        <Link href="/privacy" style={{ color: 'var(--color-text-light)', fontSize: '0.9rem', textDecoration: 'underline' }}>
+          Privacy Policy
+        </Link>
+        |
+        <Link href="/terms" style={{ color: 'var(--color-text-light)', fontSize: '0.9rem', textDecoration: 'underline' }}>
+          Terms & Conditions
+        </Link>
+      </footer>
     </main>
   );
 }
