@@ -31,6 +31,7 @@ export type RSVP = {
   guests: string;
   comment: string;
   timestamp: string;
+  isAttending: boolean;
 };
 
 // Helper to append a new RSVP
@@ -38,10 +39,10 @@ export async function appendRSVP(rsvp: RSVP) {
   try {
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:E", // Assuming columns: Timestamp, Name, Phone, Guests, Comment
+      range: "Sheet1!A:F", // Columns: Timestamp, Name, Phone, Guests, Comment, Attending
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [[rsvp.timestamp, rsvp.name, rsvp.phone, rsvp.guests, rsvp.comment]],
+        values: [[rsvp.timestamp, rsvp.name, rsvp.phone, rsvp.guests, rsvp.comment, rsvp.isAttending ? "Yes" : "No"]],
       },
     });
     return response.data;
@@ -56,7 +57,7 @@ export async function getRSVPs(): Promise<RSVP[]> {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:E",
+      range: "Sheet1!A:F",
     });
 
     const rows = response.data.values;
@@ -73,6 +74,7 @@ export async function getRSVPs(): Promise<RSVP[]> {
       phone: row[2] || "",
       guests: row[3] || "1",
       comment: row[4] || "",
+      isAttending: row[5] ? row[5] === "Yes" : true, // Default to true for past RSVPs
     })).reverse(); // Reverse so newest are first
   } catch (error) {
     console.error("Error fetching RSVPs from Google Sheets", error);

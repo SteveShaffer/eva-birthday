@@ -29,18 +29,23 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, phone, guests, comment } = body;
+    const { name, phone, guests, comment, isAttending } = body;
 
-    if (!name || !phone || !guests) {
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    if (isAttending !== false && (!phone || !guests)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     await appendRSVP({
       name,
-      phone,
-      guests: guests.toString(),
+      phone: phone || "N/A",
+      guests: guests ? guests.toString() : "0",
       comment: comment || "",
       timestamp: new Date().toISOString(),
+      isAttending: isAttending === undefined ? true : Boolean(isAttending),
     });
 
     return NextResponse.json({ success: true });

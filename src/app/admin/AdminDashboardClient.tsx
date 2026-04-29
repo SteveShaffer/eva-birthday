@@ -8,7 +8,8 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
   const [smsMessage, setSmsMessage] = useState("");
   const [smsStatus, setSmsStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
-  const totalGuests = rsvps.reduce((acc, curr) => acc + (parseInt(curr.guests) || 0), 0);
+  const totalGuests = rsvps.reduce((acc, curr) => curr.isAttending ? acc + (parseInt(curr.guests) || 0) : acc, 0);
+  const attendingRsvps = rsvps.filter(r => r.isAttending);
 
   const handleSendSMS = async () => {
     if (!smsMessage.trim() || rsvps.length === 0) return;
@@ -17,7 +18,7 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
 
     setSmsStatus("sending");
     try {
-      const phones = rsvps.map(r => r.phone).filter(Boolean);
+      const phones = attendingRsvps.map(r => r.phone).filter(Boolean);
       
       const res = await fetch("/api/sms", {
         method: "POST",
@@ -52,7 +53,7 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
       <div className="card mb-4">
         <h2 className="mb-2">Send SMS Blast</h2>
         <p className="mb-2" style={{ color: 'var(--color-text-light)' }}>
-          This will send a text message to all {rsvps.length} registered phone numbers via Twilio.
+          This will send a text message to all {attendingRsvps.length} registered phone numbers of attending guests via Twilio.
         </p>
         
         <textarea 
@@ -87,6 +88,7 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
               <tr style={{ borderBottom: '2px solid #eee' }}>
                 <th style={{ padding: '12px' }}>Timestamp</th>
                 <th style={{ padding: '12px' }}>Name</th>
+                <th style={{ padding: '12px' }}>Attending</th>
                 <th style={{ padding: '12px' }}>Phone</th>
                 <th style={{ padding: '12px' }}>Guests</th>
                 <th style={{ padding: '12px' }}>Comment</th>
@@ -99,14 +101,21 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
                     {new Date(rsvp.timestamp).toLocaleString()}
                   </td>
                   <td style={{ padding: '12px', fontWeight: 'bold' }}>{rsvp.name}</td>
-                  <td style={{ padding: '12px' }}>{rsvp.phone}</td>
-                  <td style={{ padding: '12px' }}>{rsvp.guests}</td>
+                  <td style={{ padding: '12px' }}>
+                    {rsvp.isAttending ? (
+                      <span style={{ color: 'green', fontWeight: 'bold' }}>Yes</span>
+                    ) : (
+                      <span style={{ color: 'red', fontWeight: 'bold' }}>No</span>
+                    )}
+                  </td>
+                  <td style={{ padding: '12px' }}>{rsvp.isAttending ? rsvp.phone : "-"}</td>
+                  <td style={{ padding: '12px' }}>{rsvp.isAttending ? rsvp.guests : "-"}</td>
                   <td style={{ padding: '12px' }}>{rsvp.comment}</td>
                 </tr>
               ))}
               {rsvps.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-light)' }}>
+                  <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-light)' }}>
                     No RSVPs yet.
                   </td>
                 </tr>

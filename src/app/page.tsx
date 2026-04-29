@@ -14,6 +14,8 @@ export default function Home() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [rsvps, setRsvps] = useState<any[]>([]);
   const [totalGuests, setTotalGuests] = useState(0);
+  const [isAttending, setIsAttending] = useState(true);
+  const [submittedAttending, setSubmittedAttending] = useState(true);
 
   useEffect(() => {
     // Fetch RSVPs
@@ -21,9 +23,9 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (data.rsvps) {
-          const total = data.rsvps.reduce((acc: number, r: any) => acc + (parseInt(r.guests) || 0), 0);
+          const total = data.rsvps.reduce((acc: number, r: any) => r.isAttending ? acc + (parseInt(r.guests) || 0) : acc, 0);
           setTotalGuests(total);
-          setRsvps(data.rsvps.filter((r: any) => r.comment && r.comment.trim() !== ""));
+          setRsvps(data.rsvps.filter((r: any) => r.isAttending && r.comment && r.comment.trim() !== ""));
         }
       })
       .catch(err => console.error("Error fetching RSVPs", err));
@@ -36,18 +38,21 @@ export default function Home() {
       const res = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, guests, comment }),
+        body: JSON.stringify({ name, phone, guests, comment, isAttending }),
       });
       if (!res.ok) throw new Error("Failed to submit");
       setStatus("success");
+      setSubmittedAttending(isAttending);
       
       // Update local state
-      setTotalGuests(prev => prev + parseInt(guests));
-      if (comment.trim()) {
-        setRsvps(prev => [{ name, comment, date: new Date().toISOString() }, ...prev]);
+      if (isAttending) {
+        setTotalGuests(prev => prev + parseInt(guests));
+        if (comment.trim()) {
+          setRsvps(prev => [{ name, comment, date: new Date().toISOString() }, ...prev]);
+        }
       }
       
-      setName(""); setPhone(""); setGuests("1"); setComment("");
+      setName(""); setPhone(""); setGuests("1"); setComment(""); setIsAttending(true);
     } catch (error) {
       setStatus("error");
     }
@@ -108,36 +113,66 @@ export default function Home() {
 
           {status === "success" ? (
             <div className={styles.successMessage}>
-              <PawPrint size={48} className="animate-bounce" color="var(--color-primary)" />
-              <h3>Roar-some!</h3>
-              <p>We can't wait to see you there!</p>
+              <PawPrint size={48} className="animate-bounce" color={submittedAttending ? "var(--color-primary)" : "var(--color-text-light)"} />
+              <h3>{submittedAttending ? "Roar-some!" : "Oh no, what a bummer!"}</h3>
+              <p>{submittedAttending ? "We can't wait to see you there!" : "We will miss you, but hope to celebrate soon!"}</p>
               <button className="btn btn-secondary mt-2" onClick={() => setStatus("idle")}>RSVP for someone else</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
-                <label htmlFor="name">Name</label>
-                <input required type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="phone">Phone Number</label>
-                <input required type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(123) 456-7890" />
-                <small>We'll text you our exact spot the morning of!</small>
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="guests">Number of People</label>
-                <div className={styles.selectWrapper}>
-                  <Users size={18} className={styles.selectIcon} />
-                  <select id="guests" value={guests} onChange={(e) => setGuests(e.target.value)}>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={18} className={styles.selectArrow} />
+                <label>Will you be joining us?</label>
+                <div className={styles.segmentedControl}>
+                  <button 
+                    type="button"
+                    className={`${styles.segmentBtn} ${isAttending ? styles.activeYes : ''}`}
+                    onClick={() => setIsAttending(true)}
+                  >
+                    Yes, we'll be there!
+                  </button>
+                  <button 
+                    type="button"
+                    className={`${styles.segmentBtn} ${!isAttending ? styles.activeNo : ''}`}
+                    onClick={() => setIsAttending(false)}
+                  >
+                    No, we can't make it
+                  </button>
                 </div>
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="comment">Optional Comment</label>
+                <label htmlFor="name">Name</label>
+                <input required type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" />
+              </div>
+              {isAttending && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="phone">Phone Number</label>
+                    <input required type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(123) 456-7890" />
+                    <small>We'll text you our exact spot the morning of!</small>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="guests">Number of People</label>
+                    <div className={styles.selectWrapper}>
+                      <Users size={18} className={styles.selectIcon} />
+                      <select id="guests" value={guests} onChange={(e) => setGuests(e.target.value)}>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={18} className={styles.selectArrow} />
+                    </div>
+                  </div>
+                </>
+              )}
+              {!isAttending && (
+                <div className={styles.formGroup} style={{ display: 'none' }}>
+                  {/* Hidden fields to satisfy form validation if not attending */}
+                  <input type="hidden" id="phone" value="N/A" />
+                  <input type="hidden" id="guests" value="0" />
+                </div>
+              )}
+              <div className={styles.formGroup}>
+                <label htmlFor="comment">Optional Comment (or Joke)</label>
                 <textarea id="comment" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Excited for the zoo!"></textarea>
               </div>
               {status === "error" && <p className={styles.error}>Oops, something went wrong. Please try again.</p>}

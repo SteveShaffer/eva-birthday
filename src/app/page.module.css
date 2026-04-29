@@ -1,6 +1,6 @@
 .main {
   min-height: 100vh;
-  padding-bottom: 60px;
+  padding-bottom: 0;
   position: relative;
   z-index: 0;
 }
@@ -278,4 +278,41 @@
   .title {
     font-size: 2.8rem;
   }
+}
+
+.segmentedControl {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: var(--border-radius-xl);
+  padding: 6px;
+  gap: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.segmentBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: calc(var(--border-radius-xl) - 6px);
+  border: none;
+  background: transparent;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-light);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.activeYes {
+  background-color: var(--color-leaf);
+  color: white;
+  box-shadow: 0 4px 12px rgba(138, 201, 38, 0.4);
+  transform: scale(1.02);
+}
+
+.activeNo {
+  background-color: var(--color-text-light);
+  color: white;
+  box-shadow: 0 4px 12px rgba(90, 107, 124, 0.4);
+  transform: scale(1.02);
 }
