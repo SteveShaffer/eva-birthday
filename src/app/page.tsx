@@ -79,10 +79,10 @@ export default function Home() {
             </div>
           </div>
 
-          <h3 className="mt-3 mb-2">Event Schedule</h3>
+          <h3 className="mt-3 mb-2">Schedule</h3>
           <ul className={styles.scheduleList}>
             <li><strong>11am - 1pm:</strong> Food, games, and cake! 🍰</li>
-            <li><strong>1pm - 3pm:</strong> Optional zoo visit ($2 entry for ages 3+) 🦧</li>
+            <li><strong>1pm - 3pm:</strong> Zoo visit (optional) 🦒</li>
           </ul>
 
           <div className={styles.detailItem + " mt-3"}>
