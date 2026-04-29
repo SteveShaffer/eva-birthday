@@ -64,8 +64,8 @@
 .detailsCard {
   position: relative;
   z-index: 3;
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(1px);
 }
 
 .detailsCard h2 {
@@ -125,8 +125,8 @@
 }
 
 .rsvpCard {
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(1px);
 }
 
 .rsvpCard h2 {
