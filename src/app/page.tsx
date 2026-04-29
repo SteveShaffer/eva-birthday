@@ -13,13 +13,16 @@ export default function Home() {
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [rsvps, setRsvps] = useState<any[]>([]);
+  const [totalGuests, setTotalGuests] = useState(0);
 
   useEffect(() => {
-    // Fetch RSVPs (we'll implement this API route next)
+    // Fetch RSVPs
     fetch("/api/rsvp")
       .then(res => res.json())
       .then(data => {
         if (data.rsvps) {
+          const total = data.rsvps.reduce((acc: number, r: any) => acc + (parseInt(r.guests) || 0), 0);
+          setTotalGuests(total);
           setRsvps(data.rsvps.filter((r: any) => r.comment && r.comment.trim() !== ""));
         }
       })
@@ -37,10 +40,13 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Failed to submit");
       setStatus("success");
-      // Add to local state if there's a comment
+      
+      // Update local state
+      setTotalGuests(prev => prev + parseInt(guests));
       if (comment.trim()) {
         setRsvps(prev => [{ name, comment, date: new Date().toISOString() }, ...prev]);
       }
+      
       setName(""); setPhone(""); setGuests("1"); setComment("");
     } catch (error) {
       setStatus("error");
@@ -141,6 +147,14 @@ export default function Home() {
             </form>
           )}
         </section>
+
+        {totalGuests > 0 && (
+          <div className="card text-center mb-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(4px)', padding: '16px', border: '2px dashed var(--color-primary)' }}>
+            <h3 style={{ margin: 0, color: 'var(--color-primary)' }}>
+              🎉 {totalGuests} {totalGuests === 1 ? 'person is' : 'people are'} coming so far! 🎉
+            </h3>
+          </div>
+        )}
 
         {rsvps.length > 0 && (
           <section className={`card ${styles.guestBookCard}`}>
