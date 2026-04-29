@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { appendRSVP, getRSVPs } from "@/lib/google-sheets";
+import * as Sentry from "@sentry/nextjs";
 
 export async function GET() {
   try {
@@ -7,12 +8,12 @@ export async function GET() {
     if (!process.env.GOOGLE_SHEET_ID) {
       return NextResponse.json({ rsvps: [] });
     }
-    
+
     const rsvps = await getRSVPs();
     // For the public feed, we might want to sanitize the data
     // Let's hide phone numbers from the public API
     const sanitizedRsvps = rsvps.map(({ phone, ...rest }) => rest);
-    
+
     return NextResponse.json({ rsvps: sanitizedRsvps });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch RSVPs" }, { status: 500 });
@@ -20,6 +21,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  let body: any = null;
   try {
     // Check if env vars are configured
     if (!process.env.GOOGLE_SHEET_ID || !process.env.GOOGLE_PRIVATE_KEY) {
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, warning: "Mock mode" });
     }
 
-    const body = await request.json();
+    body = await request.json();
     const { name, phone, guests, comment, isAttending } = body;
 
     if (!name) {
@@ -51,6 +53,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("RSVP Submission Error:", error);
+    Sentry.captureException(error, {
+      extra: {
+        requestBody: body
+      }
+    });
     return NextResponse.json({ error: "Failed to submit RSVP" }, { status: 500 });
   }
 }

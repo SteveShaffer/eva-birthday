@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, PawPrint, ChevronDown } from "lucide-react";
 import AddToCalendar from "@/components/AddToCalendar";
+import * as Sentry from "@sentry/nextjs";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -43,7 +44,7 @@ export default function Home() {
       if (!res.ok) throw new Error("Failed to submit");
       setStatus("success");
       setSubmittedAttending(isAttending);
-      
+
       // Update local state
       if (isAttending) {
         setTotalGuests(prev => prev + parseInt(guests));
@@ -51,9 +52,14 @@ export default function Home() {
           setRsvps(prev => [{ name, comment, date: new Date().toISOString() }, ...prev]);
         }
       }
-      
+
       setName(""); setPhone(""); setGuests("1"); setComment(""); setIsAttending(true);
     } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          formData: { name, phone, guests, comment, isAttending }
+        }
+      });
       setStatus("error");
     }
   };
@@ -123,14 +129,14 @@ export default function Home() {
               <div className={styles.formGroup}>
                 <label>Will you be joining us?</label>
                 <div className={styles.segmentedControl}>
-                  <button 
+                  <button
                     type="button"
                     className={`${styles.segmentBtn} ${isAttending ? styles.activeYes : ''}`}
                     onClick={() => setIsAttending(true)}
                   >
                     Yes, we'll be there!
                   </button>
-                  <button 
+                  <button
                     type="button"
                     className={`${styles.segmentBtn} ${!isAttending ? styles.activeNo : ''}`}
                     onClick={() => setIsAttending(false)}

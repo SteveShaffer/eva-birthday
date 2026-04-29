@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "Join us for a wild time at Eva's 5th Birthday Party!",
 };
 
+import SentryInitializer from "@/components/SentryInitializer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fredoka.variable} ${nunito.variable}`}>
       <body>
+        <SentryInitializer />
         {children}
         <Analytics />
       </body>
