@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, PawPrint, ChevronDown } from "lucide-react";
+import AddToCalendar from "@/components/AddToCalendar";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -64,6 +65,9 @@ export default function Home() {
             <div>
               <strong>Saturday, May 23, 2026</strong>
               <p>11:00 AM - 3:00 PM</p>
+              <div className="mt-2" style={{ zIndex: 10 }}>
+                <AddToCalendar />
+              </div>
             </div>
           </div>
           <div className={styles.detailItem}>
