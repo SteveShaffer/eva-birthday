@@ -224,27 +224,41 @@
   text-align: center;
 }
 
-.commentGrid {
-  display: grid;
-  gap: 16px;
+.guestBookCard {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  margin-top: 24px;
+  margin-bottom: 24px;
 }
 
-.commentCard {
-  background-color: white;
-  padding: 16px;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
-  border-left: 4px solid var(--color-secondary);
+.guestBookCard h2 {
+  color: var(--color-primary);
+  font-size: 2rem;
 }
 
-.commentCard strong {
+.commentList {
+  display: flex;
+  flex-direction: column;
+}
+
+.commentItem {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.commentItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.commentItem strong {
   display: block;
   font-family: var(--font-heading);
   color: var(--color-primary);
   margin-bottom: 4px;
 }
 
-.commentCard p {
+.commentItem p {
   color: var(--color-text);
   margin: 0;
 }

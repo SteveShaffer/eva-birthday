@@ -143,14 +143,16 @@ export default function Home() {
         </section>
 
         {rsvps.length > 0 && (
-          <section className="mt-4 mb-4">
-            <h3 className="text-center mb-3" style={{ color: 'var(--color-primary)' }}>
-              <MessageSquare size={24} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-              Guest Book
-            </h3>
-            <div className={styles.commentGrid}>
+          <section className={`card ${styles.guestBookCard}`}>
+            <div className="text-center mb-3">
+              <h2>
+                <MessageSquare size={28} style={{ verticalAlign: 'middle', marginRight: '8px', marginBottom: '4px' }} />
+                Guest Book
+              </h2>
+            </div>
+            <div className={styles.commentList}>
               {rsvps.map((rsvp, idx) => (
-                <div key={idx} className={styles.commentCard}>
+                <div key={idx} className={styles.commentItem}>
                   <strong>{rsvp.name}</strong>
                   <p>{rsvp.comment}</p>
                 </div>
