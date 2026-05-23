@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, PawPrint, ChevronDown } from "lucide-react";
 import AddToCalendar from "@/components/AddToCalendar";
@@ -78,7 +79,16 @@ export default function Home() {
         <section className={`card ${styles.detailsCard}`}>
           <h2>Party Details</h2>
           <div style={{ color: '#d32f2f', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem', backgroundColor: '#ffebee', padding: '1rem', borderRadius: '8px', border: '2px solid #ef5350' }}>
-            The party is located at the very end of Parking Lot T. Try to park in lots T or S.
+            <p style={{ marginBottom: '1rem', margin: '0 0 1rem 0' }}>The party is located at the very end of Parking Lot T. Try to park in lots T or S.</p>
+            <div style={{ borderRadius: '6px', overflow: 'hidden', border: '2px solid #ef5350', backgroundColor: 'white' }}>
+              <Image 
+                src="/location.png" 
+                alt="Parking Map" 
+                width={800} 
+                height={600} 
+                style={{ width: '100%', height: 'auto', display: 'block' }} 
+              />
+            </div>
           </div>
           <div className={styles.detailItem}>
             <div className={styles.iconWrapper}><Calendar size={24} /></div>
