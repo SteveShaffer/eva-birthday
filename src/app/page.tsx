@@ -77,6 +77,9 @@ export default function Home() {
       <div className="container">
         <section className={`card ${styles.detailsCard}`}>
           <h2>Party Details</h2>
+          <div style={{ color: '#d32f2f', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem', backgroundColor: '#ffebee', padding: '1rem', borderRadius: '8px', border: '2px solid #ef5350' }}>
+            The party is located at the very end of Parking Lot T. Try to park in lots T or S.
+          </div>
           <div className={styles.detailItem}>
             <div className={styles.iconWrapper}><Calendar size={24} /></div>
             <div>
@@ -92,7 +95,7 @@ export default function Home() {
             <div>
               <strong>Irvine Regional Park</strong>
               <p>1 Irvine Park Road<br />Orange, California 92869</p>
-              <p className={styles.note}>$3 per car entry fee into the park. We will update on our location the morning of the event.</p>
+              <p className={styles.note}>$3 per car entry fee into the park.</p>
             </div>
           </div>
 
