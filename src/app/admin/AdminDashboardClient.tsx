@@ -13,21 +13,21 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
 
   const handleSendSMS = async () => {
     if (!smsMessage.trim() || rsvps.length === 0) return;
-    
+
     if (!confirm(`Are you sure you want to send this message to ${rsvps.length} phone numbers?`)) return;
 
     setSmsStatus("sending");
     try {
       const phones = attendingRsvps.map(r => r.phone).filter(Boolean);
-      
+
       const res = await fetch("/api/sms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: smsMessage, phones }),
       });
-      
+
       if (!res.ok) throw new Error("Failed to send SMS");
-      
+
       setSmsStatus("success");
       setSmsMessage("");
       setTimeout(() => setSmsStatus("idle"), 5000);
@@ -55,29 +55,42 @@ export default function AdminDashboardClient({ initialRsvps }: { initialRsvps: R
         <p className="mb-2" style={{ color: 'var(--color-text-light)' }}>
           This will send a text message to all {attendingRsvps.length} registered phone numbers of attending guests via Twilio.
         </p>
-        
-        <textarea 
-          rows={4} 
+
+        <textarea
+          rows={4}
           style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', marginBottom: '16px' }}
           placeholder="e.g. We are located near the monkey exhibit! See you soon!"
           value={smsMessage}
           onChange={(e) => setSmsMessage(e.target.value)}
         ></textarea>
-        
+
         {smsStatus === "success" && (
           <div style={{ color: 'green', marginBottom: '16px', fontWeight: 'bold' }}>Messages sent successfully!</div>
         )}
         {smsStatus === "error" && (
           <div style={{ color: 'red', marginBottom: '16px', fontWeight: 'bold' }}>Error sending messages. Check console and Twilio balance.</div>
         )}
-        
-        <button 
-          className="btn btn-primary" 
+
+        <button
+          className="btn btn-primary"
           onClick={handleSendSMS}
           disabled={smsStatus === "sending" || !smsMessage.trim()}
         >
           {smsStatus === "sending" ? "Sending..." : "Send SMS to All"}
         </button>
+      </div>
+
+      <div className="card mb-4">
+        <h2 className="mb-2">Copy Phone Numbers</h2>
+        <p className="mb-2" style={{ color: 'var(--color-text-light)' }}>
+          All {attendingRsvps.filter(r => r.phone).length} phone numbers of attending guests separated by newlines for easy copy-pasting into your messaging app.
+        </p>
+        <textarea
+          readOnly
+          rows={4}
+          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', resize: 'vertical' }}
+          value={attendingRsvps.map(r => r.phone).filter(Boolean).join('\n')}
+        />
       </div>
 
       <div className="card">
