@@ -73,7 +73,7 @@ export default function Home() {
     } catch (error) {
       Sentry.captureException(error, {
         extra: {
-          formData: { name, phone, guests, comment, isAttending }
+          formData: { name, guests, comment, attendingSaturday, attendingSunday, attendingMonday }
         }
       });
       setStatus("error");
