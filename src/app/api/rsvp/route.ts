@@ -11,8 +11,7 @@ export async function GET() {
 
     const rsvps = await getRSVPs();
     // For the public feed, we might want to sanitize the data
-    // Let's hide phone numbers from the public API
-    const sanitizedRsvps = rsvps.map(({ phone, ...rest }) => rest);
+    const sanitizedRsvps = rsvps;
 
     return NextResponse.json({ rsvps: sanitizedRsvps });
   } catch (error) {
@@ -31,23 +30,26 @@ export async function POST(request: Request) {
     }
 
     body = await request.json();
-    const { name, phone, guests, comment, isAttending } = body;
+    const { name, guests, comment, attendingSaturday, attendingSunday, attendingMonday } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    if (isAttending !== false && (!phone || !guests)) {
+    const isAttending = attendingSaturday || attendingSunday || attendingMonday;
+
+    if (isAttending && !guests) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     await appendRSVP({
       name,
-      phone: phone || "N/A",
       guests: guests ? guests.toString() : "0",
       comment: comment || "",
       timestamp: new Date().toISOString(),
-      isAttending: isAttending === undefined ? true : Boolean(isAttending),
+      attendingSaturday: Boolean(attendingSaturday),
+      attendingSunday: Boolean(attendingSunday),
+      attendingMonday: Boolean(attendingMonday),
     });
 
     return NextResponse.json({ success: true });

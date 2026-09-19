@@ -1,12 +1,12 @@
 :root {
-  --color-primary: #FF9F1C; /* Orange/Lion */
-  --color-secondary: #2EC4B6; /* Teal/Water */
-  --color-accent: #E71D36; /* Red/Monkey */
-  --color-background: #FDFFFC; /* Off white */
+  --color-primary: #E52024; /* Disney Red */
+  --color-secondary: #1E3F87; /* Disney Blue */
+  --color-accent: #F9C014; /* Disney Yellow */
+  --color-background: #F8F9FA; 
   --color-surface: #FFFFFF;
-  --color-text: #011627;
-  --color-text-light: #5A6B7C;
-  --color-leaf: #8AC926; /* Green/Leaves */
+  --color-text: #111827;
+  --color-text-light: #4B5563;
+  --color-leaf: #1E3F87; /* Use Blue for the Yes button */
 
   --font-heading: var(--font-fredoka), sans-serif;
   --font-body: var(--font-nunito), sans-serif;

@@ -27,11 +27,12 @@ export const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 // Define the RSVP type
 export type RSVP = {
   name: string;
-  phone: string;
   guests: string;
   comment: string;
   timestamp: string;
-  isAttending: boolean;
+  attendingSaturday: boolean;
+  attendingSunday: boolean;
+  attendingMonday: boolean;
 };
 
 // Helper to append a new RSVP
@@ -39,10 +40,18 @@ export async function appendRSVP(rsvp: RSVP) {
   try {
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:F", // Columns: Timestamp, Name, Phone, Guests, Comment, Attending
+      range: "Sheet1!A:G", // Columns: Timestamp, Name, Guests, Comment, Saturday, Sunday, Monday
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [[rsvp.timestamp, rsvp.name, rsvp.phone, rsvp.guests, rsvp.comment, rsvp.isAttending ? "Yes" : "No"]],
+        values: [[
+          rsvp.timestamp, 
+          rsvp.name, 
+          rsvp.guests, 
+          rsvp.comment, 
+          rsvp.attendingSaturday ? "Yes" : "No",
+          rsvp.attendingSunday ? "Yes" : "No",
+          rsvp.attendingMonday ? "Yes" : "No"
+        ]],
       },
     });
     return response.data;
@@ -57,7 +66,7 @@ export async function getRSVPs(): Promise<RSVP[]> {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:F",
+      range: "Sheet1!A:G",
     });
 
     const rows = response.data.values;
@@ -71,10 +80,11 @@ export async function getRSVPs(): Promise<RSVP[]> {
     return dataRows.map((row) => ({
       timestamp: row[0] || "",
       name: row[1] || "",
-      phone: row[2] || "",
-      guests: row[3] || "1",
-      comment: row[4] || "",
-      isAttending: row[5] ? row[5] === "Yes" : true, // Default to true for past RSVPs
+      guests: row[2] || "1",
+      comment: row[3] || "",
+      attendingSaturday: row[4] === "Yes",
+      attendingSunday: row[5] === "Yes",
+      attendingMonday: row[6] === "Yes",
     })).reverse(); // Reverse so newest are first
   } catch (error) {
     console.error("Error fetching RSVPs from Google Sheets", error);

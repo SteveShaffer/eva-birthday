@@ -4,19 +4,21 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
-import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, PawPrint, ChevronDown } from "lucide-react";
+import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, Sparkles, ChevronDown } from "lucide-react";
 import AddToCalendar from "@/components/AddToCalendar";
 import * as Sentry from "@sentry/nextjs";
 
 export default function Home() {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [guests, setGuests] = useState("1");
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [rsvps, setRsvps] = useState<any[]>([]);
   const [totalGuests, setTotalGuests] = useState(0);
   const [isAttending, setIsAttending] = useState(true);
+  const [attendingSaturday, setAttendingSaturday] = useState(true);
+  const [attendingSunday, setAttendingSunday] = useState(true);
+  const [attendingMonday, setAttendingMonday] = useState(true);
   const [submittedAttending, setSubmittedAttending] = useState(true);
 
   useEffect(() => {
@@ -25,9 +27,10 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (data.rsvps) {
-          const total = data.rsvps.reduce((acc: number, r: any) => r.isAttending ? acc + (parseInt(r.guests) || 0) : acc, 0);
+          const isAtt = (r: any) => r.attendingSaturday || r.attendingSunday || r.attendingMonday;
+          const total = data.rsvps.reduce((acc: number, r: any) => isAtt(r) ? acc + (parseInt(r.guests) || 0) : acc, 0);
           setTotalGuests(total);
-          setRsvps(data.rsvps.filter((r: any) => r.isAttending && r.comment && r.comment.trim() !== ""));
+          setRsvps(data.rsvps.filter((r: any) => isAtt(r) && r.comment && r.comment.trim() !== ""));
         }
       })
       .catch(err => console.error("Error fetching RSVPs", err));
@@ -35,12 +38,23 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isAttending && !attendingSaturday && !attendingSunday && !attendingMonday) {
+      alert("Please select at least one day you will be attending!");
+      return;
+    }
     setStatus("loading");
     try {
       const res = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, guests, comment, isAttending }),
+        body: JSON.stringify({ 
+          name, 
+          guests: isAttending ? guests : "0", 
+          comment, 
+          attendingSaturday: isAttending ? attendingSaturday : false, 
+          attendingSunday: isAttending ? attendingSunday : false, 
+          attendingMonday: isAttending ? attendingMonday : false 
+        }),
       });
       if (!res.ok) throw new Error("Failed to submit");
       setStatus("success");
@@ -54,7 +68,8 @@ export default function Home() {
         }
       }
 
-      setName(""); setPhone(""); setGuests("1"); setComment(""); setIsAttending(true);
+      setName(""); setGuests("1"); setComment(""); setIsAttending(true);
+      setAttendingSaturday(true); setAttendingSunday(true); setAttendingMonday(true);
     } catch (error) {
       Sentry.captureException(error, {
         extra: {
@@ -69,57 +84,75 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={`${styles.badge} animate-bounce`}>You're Invited!</div>
-          <h1 className={styles.title}>Eva is turning 5!</h1>
-          <p className={styles.subtitle}>Join us for a WILD time!</p>
+          <div className={`${styles.badge} animate-bounce`}>Shh! It's a surprise! 🤫</div>
+          <h1 className={styles.title}>Megan is turning 40!</h1>
+          <p className={styles.subtitle}>Join us for a magical weekend at Disneyland!</p>
         </div>
       </div>
 
       <div className="container">
         <section className={`card ${styles.detailsCard}`}>
-          <h2>Party Details</h2>
-          <div style={{ color: '#d32f2f', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem', backgroundColor: '#ffebee', padding: '1rem', borderRadius: '8px', border: '2px solid #ef5350' }}>
-            <p style={{ marginBottom: '1rem', margin: '0 0 1rem 0' }}>The party is located at the very end of Parking Lot T. Try to park in lots T or S.</p>
-            <div style={{ borderRadius: '6px', overflow: 'hidden', border: '2px solid #ef5350', backgroundColor: 'white' }}>
+          <div style={{ color: '#0277bd', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem', backgroundColor: '#e1f5fe', padding: '1rem', borderRadius: '8px', border: '2px solid #03a9f4' }}>
+            <p style={{ margin: '0' }}>Megan knows about the trip but not about Sunday's dinner! Please keep that a secret. 🤐</p>
+          </div>
+
+          <div className="text-center mt-4 mb-3">
+            <h3 style={{ marginBottom: '4px' }}>Itinerary</h3>
+            <p style={{ color: 'var(--color-text-light)', fontStyle: 'italic' }}>Join us for whatever parts you'd like</p>
+          </div>
+
+          <div className={styles.itineraryDay}>
+            <h4>Saturday 9/26: California Adventure Day 🎢</h4>
+            <p>Join us if you'd like. Tickets are your responsibility.</p>
+            <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(0,0,0,0.1)' }}>
+              <Image
+                src="/california_adventure.jpg"
+                alt="California Adventure"
+                width={600}
+                height={400}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </div>
+          </div>
+
+          <div className={`${styles.itineraryDay} ${styles.mainEvent}`}>
+            <h4>Sunday 9/27: Megan's 40th Birthday Dinner & Celebration 🍽️</h4>
+            <p><strong>6:00 PM - 8:00 PM</strong> at Naples Ristorante e Bar in Downtown Disney.</p>
+            <p>No gifts required. Dinner is complimentary.</p>
+            <p className={styles.note}>Parking in the Downtown Disney Simba lot is $10 with validation.</p>
+            <div className="mt-3 mb-1" style={{ zIndex: 10, position: 'relative' }}>
+              <AddToCalendar />
+            </div>
+            <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(0,0,0,0.1)' }}>
               <Image 
-                src="/location.png" 
-                alt="Parking Map" 
-                width={800} 
-                height={600} 
+                src="/naples.jpg" 
+                alt="Naples Ristorante" 
+                width={600} 
+                height={400} 
                 style={{ width: '100%', height: 'auto', display: 'block' }} 
               />
             </div>
           </div>
-          <div className={styles.detailItem}>
-            <div className={styles.iconWrapper}><Calendar size={24} /></div>
-            <div>
-              <strong>Saturday, May 23, 2026</strong>
-              <p>11:00 AM - 3:00 PM</p>
-              <div className="mt-2" style={{ zIndex: 10 }}>
-                <AddToCalendar />
-              </div>
-            </div>
-          </div>
-          <div className={styles.detailItem}>
-            <div className={styles.iconWrapper}><MapPin size={24} /></div>
-            <div>
-              <strong>Irvine Regional Park</strong>
-              <p>1 Irvine Park Road<br />Orange, California 92869</p>
-              <p className={styles.note}>$3 per car entry fee into the park.</p>
-            </div>
-          </div>
 
-          <h3 className="mt-3 mb-2">Schedule</h3>
-          <ul className={styles.scheduleList}>
-            <li><strong>11am - 1pm:</strong> Food, games, and cake! 🍰</li>
-            <li><strong>1pm - 3pm:</strong> Zoo visit (optional) 🦒</li>
-          </ul>
+          <div className={styles.itineraryDay}>
+            <h4>Monday 9/28: Disneyland Day 🏰</h4>
+            <p>Join us if you'd like. Tickets are your responsibility.</p>
+            <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(0,0,0,0.1)' }}>
+              <Image
+                src="/disneyland.jpg"
+                alt="Disneyland"
+                width={600}
+                height={400}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </div>
+          </div>
 
           <div className={styles.detailItem + " mt-3"}>
             <div className={styles.iconWrapper}><Phone size={24} /></div>
             <div>
               <strong>Questions?</strong>
-              <p>Text Megan: (949) 350-0257</p>
+              <p>Text Steve: (818) 949-8623</p>
             </div>
           </div>
         </section>
@@ -132,9 +165,9 @@ export default function Home() {
 
           {status === "success" ? (
             <div className={styles.successMessage}>
-              <PawPrint size={48} className="animate-bounce" color={submittedAttending ? "var(--color-primary)" : "var(--color-text-light)"} />
-              <h3>{submittedAttending ? "Roar-some!" : "Oh no, what a bummer!"}</h3>
-              <p>{submittedAttending ? "We can't wait to see you there!" : "We will miss you, but hope to celebrate soon!"}</p>
+              <Sparkles size={48} className="animate-bounce" color={submittedAttending ? "var(--color-primary)" : "var(--color-text-light)"} />
+              <h3>{submittedAttending ? "Magical!" : "Oh no, what a bummer!"}</h3>
+              <p>{submittedAttending ? "See ya real soon!" : "We will miss you, but hope to celebrate soon!"}</p>
               <button className="btn btn-secondary mt-2" onClick={() => setStatus("idle")}>RSVP for someone else</button>
             </div>
           ) : (
@@ -165,9 +198,21 @@ export default function Home() {
               {isAttending && (
                 <>
                   <div className={styles.formGroup}>
-                    <label htmlFor="phone">Phone Number</label>
-                    <input required type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(123) 456-7890" />
-                    <small>We'll text you our exact spot the morning of!</small>
+                    <label>Which parts will you join?</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '8px 0' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal' }}>
+                        <input type="checkbox" checked={attendingSaturday} onChange={(e) => setAttendingSaturday(e.target.checked)} style={{ width: '20px', height: '20px' }} />
+                        Saturday (California Adventure)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal' }}>
+                        <input type="checkbox" checked={attendingSunday} onChange={(e) => setAttendingSunday(e.target.checked)} style={{ width: '20px', height: '20px' }} />
+                        Sunday (Birthday Dinner)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal' }}>
+                        <input type="checkbox" checked={attendingMonday} onChange={(e) => setAttendingMonday(e.target.checked)} style={{ width: '20px', height: '20px' }} />
+                        Monday (Disneyland)
+                      </label>
+                    </div>
                   </div>
                   <div className={styles.formGroup}>
                     <label htmlFor="guests">Number of People</label>
@@ -185,14 +230,12 @@ export default function Home() {
               )}
               {!isAttending && (
                 <div className={styles.formGroup} style={{ display: 'none' }}>
-                  {/* Hidden fields to satisfy form validation if not attending */}
-                  <input type="hidden" id="phone" value="N/A" />
                   <input type="hidden" id="guests" value="0" />
                 </div>
               )}
               <div className={styles.formGroup}>
-                <label htmlFor="comment">Optional Comment (or Joke)</label>
-                <textarea id="comment" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Excited for the zoo!"></textarea>
+                <label htmlFor="comment">Optional Comment</label>
+                <textarea id="comment" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Can't wait for Space Mountain!"></textarea>
               </div>
               {status === "error" && <p className={styles.error}>Oops, something went wrong. Please try again.</p>}
               <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={status === "loading"}>

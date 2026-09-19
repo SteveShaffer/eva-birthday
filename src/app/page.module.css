@@ -13,9 +13,9 @@
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/zoo_bg.png');
+  background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/disney_bg.jpg');
   background-size: cover;
-  background-position: center top;
+  background-position: center bottom;
   background-repeat: no-repeat;
 }
 .hero {
@@ -110,18 +110,41 @@
   font-style: italic;
 }
 
-.scheduleList {
-  list-style: none;
-  padding: 0;
+.itineraryDay {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
-.scheduleList li {
-  padding: 12px 0;
-  border-bottom: 1px dashed rgba(0,0,0,0.1);
+.itineraryDay h4 {
+  color: var(--color-primary);
+  margin-bottom: 4px;
+  font-size: 1.1rem;
 }
 
-.scheduleList li:last-child {
-  border-bottom: none;
+.mainEvent {
+  border: 2px solid var(--color-accent);
+  background: rgba(249, 192, 20, 0.15);
+}
+
+.mainEvent h4 {
+  font-size: 1.3rem;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 160px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 2px dashed rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  margin-top: 12px;
 }
 
 .rsvpCard {
@@ -214,9 +237,9 @@
 .successMessage {
   text-align: center;
   padding: 40px 20px;
-  background-color: rgba(138, 201, 38, 0.1);
+  background-color: rgba(249, 192, 20, 0.1); /* Light yellow */
   border-radius: var(--border-radius-lg);
-  border: 2px dashed var(--color-leaf);
+  border: 2px dashed var(--color-primary);
 }
 
 .successMessage h3 {

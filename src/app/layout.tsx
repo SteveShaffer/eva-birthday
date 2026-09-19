@@ -14,8 +14,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Eva's 5th Birthday!",
-  description: "Join us for a wild time at Eva's 5th Birthday Party!",
+  title: "Megan's 40th Surprise!",
+  description: "Join us for a magical weekend at Disneyland for Megan's 40th Birthday!",
 };
 
 import SentryInitializer from "@/components/SentryInitializer";
