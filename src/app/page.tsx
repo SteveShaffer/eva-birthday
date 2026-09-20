@@ -6,6 +6,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { Calendar, Clock, MapPin, Phone, Users, MessageSquare, Sparkles, ChevronDown } from "lucide-react";
 import AddToCalendar from "@/components/AddToCalendar";
+import MegansItinerary from "@/components/MegansItinerary";
 import * as Sentry from "@sentry/nextjs";
 
 export default function Home() {
@@ -22,7 +23,9 @@ export default function Home() {
   const [submittedAttending, setSubmittedAttending] = useState(true);
 
   useEffect(() => {
-    // Fetch RSVPs
+    // Only fetch RSVPs if we are rendering the guest site
+    if (process.env.NEXT_PUBLIC_SITE_TARGET === 'megan') return;
+
     fetch("/api/rsvp")
       .then(res => res.json())
       .then(data => {
@@ -35,6 +38,10 @@ export default function Home() {
       })
       .catch(err => console.error("Error fetching RSVPs", err));
   }, []);
+
+  if (process.env.NEXT_PUBLIC_SITE_TARGET === 'megan') {
+    return <MegansItinerary />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

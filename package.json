@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:megan": "NEXT_PUBLIC_SITE_TARGET=megan next dev",
     "build": "next build",
+    "build:megan": "NEXT_PUBLIC_SITE_TARGET=megan next build",
     "start": "next start",
     "lint": "eslint"
   },

@@ -147,6 +147,45 @@
   margin-top: 12px;
 }
 
+.agendaItem {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.agendaItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.agendaThumbnail {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--color-text-light);
+  position: relative;
+}
+
+.agendaContent {
+  flex-grow: 1;
+}
+
+.agendaContent p {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+}
+
 .rsvpCard {
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(1px);

@@ -13,9 +13,13 @@ const nunito = Nunito({
   subsets: ["latin"],
 });
 
+const isMegan = process.env.NEXT_PUBLIC_SITE_TARGET === 'megan';
+
 export const metadata: Metadata = {
-  title: "Megan's 40th Surprise!",
-  description: "Join us for a magical weekend at Disneyland for Megan's 40th Birthday!",
+  title: isMegan ? "Megan's 40th Birthday Weekend" : "Megan's 40th Surprise!",
+  description: isMegan 
+    ? "The itinerary for a magical weekend at the Disneyland Resort." 
+    : "Join us for a magical weekend at Disneyland for Megan's 40th Birthday!",
 };
 
 import SentryInitializer from "@/components/SentryInitializer";

@@ -53,5 +53,12 @@ cp .env.local.example .env.local
 ## Running Locally
 
 1. Install dependencies: `npm install`
-2. Start the development server: `npm run dev`
-3. Open `http://localhost:3000` in your browser.
+2. Run the **Guest RSVP site** (`party.shaffer.tech` mode):
+   ```bash
+   npm run dev
+   ```
+3. Or run **Megan's Itinerary site** (`40.shaffer.tech` mode):
+   ```bash
+   npm run dev:megan
+   ```
+4. Open `http://localhost:3000` in your browser.
